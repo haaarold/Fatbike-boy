@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fatbike Boy – gratis arcadespel in de geest van Paperboy</title>
+<meta name="description" content="Ken je Paperboy? Speel Fatbike Boy gratis in je browser: rijd op je fatbike door de straat en bezorg vuurwerk op oudejaarsavond. Pixel-art arcade.">
+<link rel="canonical" href="https://haaarold.github.io/Fatbike-boy/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#101522">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Fatbike Boy">
+<meta property="og:title" content="Fatbike Boy – gratis arcadespel in de geest van Paperboy">
+<meta property="og:description" content="Een jochie op een fatbike bezorgt vuurwerk op oudejaarsavond. Gratis in je browser, in pixel art.">
+<meta property="og:url" content="https://haaarold.github.io/Fatbike-boy/">
+<meta property="og:image" content="https://haaarold.github.io/Fatbike-boy/img/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Pixel-art straat met een jongen op een fatbike en vuurwerk uit het spel Fatbike Boy">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@graph":[
+    {
+      "@type":"WebApplication",
+      "@id":"https://haaarold.github.io/Fatbike-boy/#spel",
+      "name":"Fatbike Boy",
+      "url":"https://haaarold.github.io/Fatbike-boy/spel/",
+      "description":"Gratis pixel-art arcadespel in de browser. Rijd op een fatbike door de straat, gooi vuurwerk op de gele tegels van klanten en ontwijk obstakels en vuurwerkvrije tuinen.",
+      "applicationCategory":"GameApplication",
+      "genre":"Arcade",
+      "operatingSystem":"Elke moderne browser",
+      "inLanguage":"nl",
+      "isAccessibleForFree":true,
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},
+      "image":"https://haaarold.github.io/Fatbike-boy/img/og-image.png",
+      "license":"https://opensource.org/license/mit"
+    },
+    {
+      "@type":"FAQPage",
+      "mainEntity":[
+        {"@type":"Question","name":"Is Fatbike Boy hetzelfde als Paperboy?","acceptedAnswer":{"@type":"Answer","text":"Nee. Paperboy is een arcadespel van Atari Games uit 1985. Fatbike Boy is een nieuw, onafhankelijk spel in dezelfde geest: je rijdt door een straat en bezorgt spullen bij de juiste huizen. Het verhaal, de figuren, de beelden en de code zijn nieuw en het spel is niet gelieerd aan Atari Games of de rechthebbenden van Paperboy."}},
+        {"@type":"Question","name":"Kan ik Paperboy nog spelen?","acceptedAnswer":{"@type":"Answer","text":"Ja. Het Internet Archive heeft Paperboy online speelbaar gemaakt in de Internet Arcade. Je vindt de link op deze pagina."}},
+        {"@type":"Question","name":"Is Fatbike Boy gratis?","acceptedAnswer":{"@type":"Answer","text":"Ja, het spel is gratis, zonder account en zonder advertenties. De broncode is open source onder de MIT-licentie."}},
+        {"@type":"Question","name":"Werkt het op een telefoon?","acceptedAnswer":{"@type":"Answer","text":"Ja. Op een telefoon of tablet stuur je met de knoppen onder het speelveld en gooi je met de rode knop. Op een computer gebruik je de pijltjestoetsen of A en D om te sturen en de spatiebalk om te gooien."}},
+        {"@type":"Question","name":"Worden er gegevens van spelers verzameld?","acceptedAnswer":{"@type":"Answer","text":"Nee. Het spel gebruikt geen account, geen cookies en geen statistieken. Alleen je beste score wordt in je eigen browser bewaard."}},
+        {"@type":"Question","name":"Is dit spel een oproep om vuurwerk te gooien?","acceptedAnswer":{"@type":"Answer","text":"Nee. Fatbike Boy is een spel met pixels en grapjes. Vuurwerk is in het echt gevaarlijk en hoort niet naar mensen, dieren, auto's of tuinen te worden gegooid. Steek vuurwerk alleen af waar en wanneer dat mag en volg de veiligheidsregels."}}
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+:root{
+  /* Layout: smalle kolom met kaarten op een nachtblauwe achtergrond, pixel-art schermen als blikvanger, één vaste donkere wereld. */
+  color-scheme:dark;
+  --nacht:#101522;
+  --vlak:#1a2133;
+  --lijn:#2c364f;
+  --tekst:#eef1f7;
+  --zacht:#a4adc2;
+  --goud:#ffd866;
+  --rood:#ff5d73;
+  --groen:#7dffb0;
+  --display:"Pixelify Sans","Trebuchet MS",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--nacht);color:var(--tekst);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-text-size-adjust:100%}
+a{color:var(--goud);text-decoration-thickness:2px;text-underline-offset:3px}
+a:hover{color:#fff}
+:focus-visible{outline:3px solid var(--goud);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--goud);color:#1a1405;padding:8px 14px;border-radius:6px;font-weight:700;z-index:5}
+.skip:focus{left:8px}
+.wrap{max-width:880px;margin:0 auto;padding:0 18px}
+img{max-width:100%;height:auto;display:block;image-rendering:pixelated;image-rendering:crisp-edges}
+
+.top{border-bottom:2px solid var(--lijn)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
+.merk{font-family:var(--display);font-weight:700;font-size:22px;color:var(--goud);text-decoration:none}
+.top nav{display:flex;gap:4px 16px;flex-wrap:wrap;font-size:15px;font-weight:600}
+.top nav a{color:var(--tekst);text-decoration:none;padding:6px 0}
+.top nav a:hover{color:var(--goud);text-decoration:underline}
+
+.hero{padding:34px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(46px,9vw,72px);line-height:.92;margin:0 0 16px;color:var(--goud)}
+.hero p{margin:0 0 16px;color:var(--zacht);max-width:46ch}
+.hero .lead{font-size:19px;color:var(--tekst)}
+.knop{display:inline-block;background:var(--goud);color:#1a1405;font-weight:700;font-size:18px;text-decoration:none;padding:15px 24px;border-radius:8px;box-shadow:0 4px 0 #a8842a;min-height:50px}
+.knop:hover{color:#1a1405;background:#ffe590}
+.knop:active{transform:translateY(2px);box-shadow:0 2px 0 #a8842a}
+.klein{font-size:14px;color:var(--zacht);margin-top:12px}
+.hero img{border-radius:10px;border:4px solid var(--lijn);width:min(100%,340px);justify-self:center}
+@media (max-width:700px){.hero .wrap{grid-template-columns:1fr}.hero img{width:min(100%,300px)}}
+
+section{padding:44px 0 0}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,5vw,36px);line-height:1.05;margin:0 0 14px;text-wrap:balance}
+h3{font-size:19px;margin:0 0 4px;line-height:1.25}
+p{margin:0 0 14px;max-width:68ch}
+.stappen{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:s}
+.stappen li{background:var(--vlak);border-radius:10px;padding:16px;counter-increment:s}
+.stappen li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;background:var(--goud);color:#1a1405;font-family:var(--display);font-weight:700;font-size:19px;margin-bottom:10px}
+.stappen p{margin:0;font-size:16px;color:var(--zacht)}
+.raster{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.kaart{background:var(--vlak);border-radius:10px;padding:16px}
+.kaart p{margin:0;font-size:16px;color:var(--zacht)}
+.galerij{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.galerij figure{margin:0;background:var(--vlak);border-radius:10px;overflow:hidden}
+.galerij figcaption{padding:10px 14px;font-weight:600;font-size:15px}
+@media (max-width:700px){.stappen,.raster{grid-template-columns:1fr}.galerij{grid-template-columns:1fr 1fr}.galerij figure:last-child{grid-column:1/-1}}
+@media (max-width:420px){.galerij{grid-template-columns:1fr}}
+
+.besturing{background:var(--vlak);border-radius:14px;padding:22px}
+.toetsen{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+.toetsen div{background:var(--nacht);border-radius:10px;padding:14px}
+.toetsen h3{font-family:var(--display);font-size:20px;color:var(--goud)}
+.toetsen p{margin:0;font-size:16px;color:var(--zacht)}
+kbd{font-family:var(--body);font-weight:700;font-size:14px;background:var(--lijn);color:var(--tekst);border-radius:5px;padding:1px 7px}
+@media (max-width:560px){.toetsen{grid-template-columns:1fr}}
+
+.feiten{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
+.feiten li{background:var(--vlak);border-radius:8px;padding:10px 14px}
+.feiten b{font-family:var(--display);font-size:18px;color:var(--goud)}
+.opmerking{font-size:15px;color:var(--zacht);border-left:4px solid var(--rood);padding-left:12px}
+
+details{background:var(--vlak);border-radius:10px;margin-bottom:8px}
+summary{cursor:pointer;padding:14px 16px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--display);font-size:24px;line-height:1;color:var(--goud)}
+details[open] summary::after{content:"–"}
+details p{padding:0 16px;margin:0 0 14px;color:var(--zacht)}
+
+footer{margin-top:56px;border-top:2px solid var(--lijn);padding:28px 0 36px;font-size:15px;color:var(--zacht)}
+footer .wrap{display:grid;gap:10px}
+footer p{margin:0;max-width:none}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#inhoud">Direct naar de inhoud</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="merk" href="./">Fatbike Boy</a>
+    <nav aria-label="Hoofdmenu">
+      <a href="spel/">Speel nu</a>
+      <a href="#hoe-het-werkt">Hoe het werkt</a>
+      <a href="#besturing">Besturing</a>
+      <a href="#paperboy">Paperboy</a>
+      <a href="#veelgestelde-vragen">Vragen</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inhoud">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Fatbike Boy</h1>
+        <p class="lead">Het gratis arcadespel voor iedereen die <strong>Paperboy</strong> nog kent. Rijd op je fatbike door de straat en bezorg vuurwerk, in pixel art en gewoon in je browser.</p>
+        <p>Het is oudejaarsavond, 23:40. De buren hebben een vuurwerkshow besteld en jij brengt hem langs. Maar let op: niet iedereen wil vuurwerk in de tuin.</p>
+        <a class="knop" href="spel/">Speel gratis</a>
+        <p class="klein">Geen account, geen advertenties. Werkt op computer, tablet en telefoon.</p>
+      </div>
+      <img src="img/scherm-straat.png" width="480" height="660" alt="Pixel-art straat van bovenaf met een jongen op een fatbike, huizen met gele tegels in de tuin en vuurwerk in de lucht">
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="hoe-het-werkt" aria-labelledby="h-hoe">
+      <h2 id="h-hoe">Hoe werkt Fatbike Boy?</h2>
+      <ol class="stappen">
+        <li><h3>Rijd de straat in</h3><p>Je fatbike rijdt vanzelf door. Jij stuurt naar links en rechts en let op alles wat in de weg staat.</p></li>
+        <li><h3>Gooi op de gele tegel</h3><p>Bij een klant ligt een gele tegel in de tuin. Gooi een vuurwerkpijl naar links en raak de tegel voor punten.</p></li>
+        <li><h3>Haal het einde van de straat</h3><p>Om middernacht volgt een vuurwerkfinale. Daarna wacht een drukkere en snellere straat.</p></li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="h-erin">
+      <h2 id="h-erin">Wat zit erin?</h2>
+      <div class="raster">
+        <div class="kaart"><h3>Klanten en punten</h3><p>Elke treffer op een gele tegel levert 100 punten op, plus een bonus voor elke treffer op rij.</p></div>
+        <div class="kaart"><h3>Vuurwerkvrije tuinen</h3><p>Een verbodsbordje betekent: niet gooien. Drie klachten en de wijkagent neemt je tas in.</p></div>
+        <div class="kaart"><h3>Obstakels</h3><p>Geparkeerde auto's, kliko's, putten, honden en tegemoetkomende scooters. Drie botsingen en je accu is leeg.</p></div>
+        <div class="kaart"><h3>Pakketten en oliebollen</h3><p>Rode pakketten vullen je voorraad aan. Oliebollen langs de weg zijn 50 punten waard.</p></div>
+        <div class="kaart"><h3>Steeds drukker</h3><p>Elke nieuwe straat is langer en sneller, met meer klanten en meer verkeer.</p></div>
+        <div class="kaart"><h3>Beste score</h3><p>Je beste score blijft in je eigen browser bewaard. Kun je je eigen record verbeteren?</p></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-schermen">
+      <h2 id="h-schermen">Zo ziet het eruit</h2>
+      <div class="galerij">
+        <figure><img src="img/scherm-straat.png" width="480" height="660" loading="lazy" alt="Fatbike Boy: vuurwerk ontploft boven een tuin met een gele tegel"><figcaption>Een treffer: 100 punten</figcaption></figure>
+        <figure><img src="img/scherm-verkeer.png" width="480" height="660" loading="lazy" alt="Fatbike Boy: een hond, een scooter, een auto en een rood pakket op de weg"><figcaption>Druk verkeer op straat</figcaption></figure>
+        <figure><img src="img/scherm-finale.png" width="480" height="660" loading="lazy" alt="Fatbike Boy: vuurwerkfinale bij de finishlijn aan het einde van de straat"><figcaption>De finale om middernacht</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="besturing" aria-labelledby="h-bes">
+      <div class="besturing">
+        <h2 id="h-bes">Besturing</h2>
+        <p>Je gooit altijd een vast stuk naar links, dus mikken doe je met sturen en het juiste moment kiezen.</p>
+        <div class="toetsen">
+          <div><h3>Op de computer</h3><p>Stuur met <kbd>←</kbd> <kbd>→</kbd> of <kbd>A</kbd> <kbd>D</kbd>. Gooi met de <kbd>spatiebalk</kbd>.</p></div>
+          <div><h3>Op telefoon en tablet</h3><p>Stuur met de twee pijlknoppen onder het speelveld. Gooi met de rode knop of door op het speelveld te tikken.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="paperboy" aria-labelledby="h-pb">
+      <h2 id="h-pb">Ken je Paperboy?</h2>
+      <p>Paperboy is een van de bekendste arcadespellen uit de jaren tachtig: je fietst door een straat, gooit kranten bij abonnees en ontwijkt alles wat in de weg staat. Wie het ooit speelde, weet nog hoe het stuur van de speelkast op een fietsstuur leek.</p>
+      <ul class="feiten">
+        <li><b>Paperboy</b>: arcadespel van Atari Games, in 1985 uitgebracht. De speelkast had een fietsstuur als bediening.</li>
+        <li><b>Zelf spelen:</b> het Internet Archive heeft het spel in zijn Internet Arcade gezet. <a href="https://archive.org/details/arcade_paperboy" rel="noopener">Speel Paperboy in je browser</a>.</li>
+        <li><b>Anders aan Fatbike Boy:</b> je kijkt van boven in plaats van schuin, je rijdt op een fatbike en de bezorging is vuurwerk op oudejaarsavond.</li>
+      </ul>
+      <p>Fatbike Boy is geïnspireerd op het idee van een bezorgspel, maar helemaal nieuw gemaakt: nieuwe code, nieuwe pixel art en een eigen verhaal. Elk spel in dit genre is anders en het idee zelf is van niemand.</p>
+      <p class="opmerking">Fatbike Boy is een onafhankelijk project en niet gelieerd aan Atari Games of de rechthebbenden van Paperboy. Paperboy wordt hier alleen genoemd ter verwijzing.</p>
+    </section>
+
+    <section id="veelgestelde-vragen" aria-labelledby="h-faq">
+      <h2 id="h-faq">Veelgestelde vragen</h2>
+      <details><summary>Is Fatbike Boy hetzelfde als Paperboy?</summary><p>Nee. Paperboy is een arcadespel van Atari Games uit 1985. Fatbike Boy is een nieuw, onafhankelijk spel in dezelfde geest: je rijdt door een straat en bezorgt spullen bij de juiste huizen. Het verhaal, de figuren, de beelden en de code zijn nieuw en het spel is niet gelieerd aan Atari Games of de rechthebbenden van Paperboy.</p></details>
+      <details><summary>Kan ik Paperboy nog spelen?</summary><p>Ja. Het Internet Archive heeft Paperboy online speelbaar gemaakt in de Internet Arcade. Je vindt de link hierboven bij het kopje over Paperboy.</p></details>
+      <details><summary>Is Fatbike Boy gratis?</summary><p>Ja, het spel is gratis, zonder account en zonder advertenties. De broncode is open source onder de MIT-licentie.</p></details>
+      <details><summary>Werkt het op een telefoon?</summary><p>Ja. Op een telefoon of tablet stuur je met de knoppen onder het speelveld en gooi je met de rode knop. Op een computer gebruik je de pijltjestoetsen of A en D om te sturen en de spatiebalk om te gooien.</p></details>
+      <details><summary>Worden er gegevens van spelers verzameld?</summary><p>Nee. Het spel gebruikt geen account, geen cookies en geen statistieken. Alleen je beste score wordt in je eigen browser bewaard.</p></details>
+      <details><summary>Is dit spel een oproep om vuurwerk te gooien?</summary><p>Nee. Fatbike Boy is een spel met pixels en grapjes. Vuurwerk is in het echt gevaarlijk en hoort niet naar mensen, dieren, auto's of tuinen te worden gegooid. Steek vuurwerk alleen af waar en wanneer dat mag en volg de veiligheidsregels.</p></details>
+    </section>
+
+    <section aria-label="Begin met spelen" style="text-align:center">
+      <a class="knop" href="spel/">Start de rit</a>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Fatbike Boy</strong>, een gratis, open source arcadespel. Broncode onder de <a href="https://github.com/haaarold/Fatbike-boy/blob/main/LICENSE" rel="noopener">MIT-licentie</a> op <a href="https://github.com/haaarold/Fatbike-boy" rel="noopener">GitHub</a>.</p>
+    <p>Paperboy is een werk van Atari Games en wordt genoemd ter verwijzing. Fatbike Boy is er niet aan verbonden.</p>
+  </div>
+</footer>
+</body>
+</html>

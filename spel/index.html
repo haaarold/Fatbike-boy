@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speel Fatbike Boy | Gratis arcadespel, in de geest van Paperboy</title>
+<meta name="description" content="Speel Fatbike Boy gratis in je browser: een pixel-art arcadespel in de geest van Paperboy. Rijd op je fatbike door de straat en bezorg vuurwerk op oudejaarsavond.">
+<link rel="canonical" href="https://haaarold.github.io/Fatbike-boy/spel/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:title" content="Speel Fatbike Boy, het gratis arcadespel">
+<meta property="og:description" content="Een jochie op een fatbike bezorgt vuurwerk op oudejaarsavond. Gratis in je browser, op computer en telefoon.">
+<meta property="og:url" content="https://haaarold.github.io/Fatbike-boy/spel/">
+<meta property="og:image" content="https://haaarold.github.io/Fatbike-boy/img/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: één smalle kolom rond een staand pixel-art speelveld (160x220). Eén vaste nachtwereld: oudejaarsavond. */
+  color-scheme:dark;
+  --nacht:#101522;
+  --vlak:#1a2133;
+  --lijn:#2c364f;
+  --tekst:#eef1f7;
+  --zacht:#a4adc2;
+  --goud:#ffd866;
+  --rood:#ff5d73;
+  --display:"Pixelify Sans","Trebuchet MS",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--nacht);color:var(--tekst);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--goud);outline-offset:2px}
+.wrap{max-width:440px;margin:0 auto;padding:14px 16px 36px;display:flex;flex-direction:column;gap:10px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:700;font-size:30px;line-height:1;margin:0;color:var(--goud)}
+.geluid{background:var(--vlak);border:2px solid var(--lijn);border-radius:6px;font-size:13px;font-weight:700;padding:6px 10px;min-height:36px}
+.hud{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.hud div{background:var(--vlak);border-radius:6px;padding:5px 8px;min-width:0}
+.hud small{display:block;font-size:10px;font-weight:700;color:var(--zacht);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.hud b{font-family:var(--display);font-size:19px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hud b.alarm{color:var(--rood)}
+.veld{position:relative;align-self:center;width:min(100%,calc(62vh * 160 / 220));border:3px solid var(--lijn);border-radius:8px;overflow:hidden;background:#000}
+#spel{display:block;width:100%;aspect-ratio:160/220;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none}
+.over{position:absolute;inset:0;background:rgba(10,14,24,.82);display:flex;flex-direction:column;justify-content:center;gap:10px;padding:18px;text-align:left}
+.over[hidden]{display:none}
+.over h2{font-family:var(--display);font-size:30px;line-height:1;margin:0;color:var(--goud);text-wrap:balance}
+.over p{margin:0;font-size:15px}
+.over ul{margin:0;padding-left:18px;font-size:14px;display:grid;gap:3px}
+.knop{background:var(--goud);color:#1a1405;border:0;border-radius:8px;font-weight:700;font-size:17px;padding:13px 16px;min-height:50px;box-shadow:0 4px 0 #a8842a}
+.knop:active{transform:translateY(2px);box-shadow:0 2px 0 #a8842a}
+.stuur{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:8px;touch-action:none;user-select:none;-webkit-user-select:none}
+.stuur button{background:var(--vlak);border:2px solid var(--lijn);border-radius:10px;min-height:64px;font-family:var(--display);font-size:24px;font-weight:700;touch-action:none}
+.stuur button.aan{background:var(--lijn)}
+.stuur #gooi{background:var(--rood);border-color:#c43a50;color:#fff;font-size:22px}
+.stuur #gooi.aan{background:#c43a50}
+.uitleg{background:var(--vlak);border-radius:8px;padding:12px 14px;font-size:14px}
+.uitleg h2{font-family:var(--display);font-size:18px;margin:0 0 6px}
+.uitleg ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.uitleg i{font-style:normal;display:inline-block;width:10px;height:10px;margin-right:4px;vertical-align:-1px}
+.klein{font-size:12px;color:var(--zacht);margin:0}
+.klein a{color:var(--zacht)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Fatbike Boy</h1>
+    <button class="geluid" id="geluid" aria-pressed="false">Geluid: uit</button>
+  </header>
+  <div class="hud" aria-live="off">
+    <div><small>Score</small><b id="h-score">0</b></div>
+    <div><small>Vuurwerk</small><b id="h-ammo">12</b></div>
+    <div><small>Accu</small><b id="h-accu">▮▮▮</b></div>
+    <div><small>Klachten</small><b id="h-klacht">0/3</b></div>
+  </div>
+  <div class="veld">
+    <canvas id="spel" width="160" height="220" role="img" aria-label="Speelveld: een straat op oudejaarsavond, van bovenaf gezien. Links de huizen, rechts de weg."></canvas>
+    <div class="over" id="over">
+      <h2 id="o-titel">Oudejaarsavond, 23:40</h2>
+      <div id="o-tekst">
+        <p>Jij bezorgt op je fatbike het vuurwerk in de straat. Maar niet iedereen heeft een show besteld.</p>
+        <ul>
+          <li>Gooi een pijl op de <b>gele tegel</b> in de tuin van een klant.</li>
+          <li>Blijf weg bij tuinen met een <b>verbodsbordje</b>: dat geeft een klacht.</li>
+          <li>Ontwijk auto's, kliko's, putten, honden en scooters.</li>
+        </ul>
+      </div>
+      <button class="knop" id="o-knop">Start de rit</button>
+    </div>
+  </div>
+  <div class="stuur">
+    <button id="links" aria-label="Stuur naar links">◀</button>
+    <button id="gooi" aria-label="Gooi vuurwerk naar links">GOOI</button>
+    <button id="rechts" aria-label="Stuur naar rechts">▶</button>
+  </div>
+  <section class="uitleg">
+    <h2>Zo werkt het</h2>
+    <ul>
+      <li><i style="background:#ffd866"></i>Gele tegel: klant. Raak de tegel voor 100 punten en een bonus voor elke treffer op rij.</li>
+      <li><i style="background:#f4f1e8;border:2px solid #e2231a"></i>Verbodsbordje: vuurwerkvrije tuin. Drie klachten en de wijkagent neemt je tas in.</li>
+      <li>Je gooit altijd een vast stuk naar links. Mikken doe je dus met sturen en het juiste moment.</li>
+      <li>Rode pakketten vullen je voorraad aan, oliebollen zijn 50 punten.</li>
+      <li>Toetsenbord: pijltjes of A en D om te sturen, spatie om te gooien.</li>
+    </ul>
+  </section>
+  <p class="klein"><a href="../">Over Fatbike Boy</a> · <a href="https://github.com/haaarold/Fatbike-boy">Broncode op GitHub</a><br>Een onafhankelijk arcadespel, in de geest van Paperboy (Atari Games, 1985) en niet gelieerd aan de makers of rechthebbenden. Vuurwerk gooien hoort alleen in dit spel thuis.</p>
+</div>
+
+<script>
+const W=160,H=220,PY=168,SLOT=56,TEGEL=39;
+const cv=document.getElementById("spel"),c=cv.getContext("2d");
+const $=id=>document.getElementById(id);
+const RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+const r=(x,y,w,h,k)=>{c.fillStyle=k;c.fillRect(Math.round(x),Math.round(y),w,h);};
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const KLEUR=["#ff5d73","#ffd866","#6ee7ff","#b48cff","#7dffb0"];
+const DAK=["#7a3b34","#4a4f63","#6b4a35","#3f5a5e"];
+const GLYPH={"0":"111101101101111","1":"010110010010111","2":"111001111100111","3":"111001111001111","4":"101101111001001","5":"111100111001111","6":"111100111101111","7":"111001001001001","8":"111101111101111","9":"111101111001111","+":"000010111010000","-":"000000111000000"};
+function tekst(s,x,y,k){
+  x=Math.round(x-s.length*2);
+  for(const ch of s){const gl=GLYPH[ch];if(gl)for(let i=0;i<15;i++)if(gl[i]==="1"){r(x+i%3+1,y+(i/3|0)+1,1,1,"#0b0e17");}x+=4;}
+  x-=s.length*4;
+  for(const ch of s){const gl=GLYPH[ch];if(gl)for(let i=0;i<15;i++)if(gl[i]==="1")r(x+i%3,y+(i/3|0),1,1,k);x+=4;}
+}
+
+/* geluid */
+let ac=null,geluid=false;
+function toon(type){
+  if(!geluid||!ac)return;
+  const t=ac.currentTime,gn=ac.createGain();gn.connect(ac.destination);
+  if(type==="knal"||type==="pfff"||type==="bots"){
+    const len=type==="knal"?.5:.2,buf=ac.createBuffer(1,ac.sampleRate*len,ac.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,type==="knal"?2.5:1.5);
+    const s=ac.createBufferSource(),fl=ac.createBiquadFilter();s.buffer=buf;fl.type="lowpass";fl.frequency.value=type==="knal"?1800:type==="bots"?500:4000;
+    s.connect(fl);fl.connect(gn);gn.gain.value=type==="knal"?.5:.25;s.start(t);
+  }else{
+    const o=ac.createOscillator();o.type="square";o.connect(gn);
+    const fq=type==="pak"?[520,780]:type==="fout"?[220,130]:[660,990];
+    o.frequency.setValueAtTime(fq[0],t);o.frequency.setValueAtTime(fq[1],t+.07);
+    gn.gain.setValueAtTime(.08,t);gn.gain.linearRampToValueAtTime(0,t+.16);o.start(t);o.stop(t+.17);
+  }
+}
+$("geluid").onclick=()=>{
+  geluid=!geluid;
+  try{if(geluid&&!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac&&ac.state==="suspended")ac.resume();}catch(e){geluid=false;}
+  $("geluid").textContent="Geluid: "+(geluid?"aan":"uit");$("geluid").setAttribute("aria-pressed",geluid);
+};
+
+/* toestand */
+let best=0;try{best=+localStorage.getItem("fatbike-boy-best")||0;}catch(e){}
+let g={mode:"titel",t:0,cam:0,px:104,speed:0,base:52,score:0,ammo:12,lives:3,klacht:0,level:0,reeks:0,cool:0,inv:0,gooi:0,schud:0,lean:0,
+  huizen:[],ents:[],schoten:[],vonken:[],pijlen:[],zweef:[],eind:0,ft:0,straatKlacht:0};
+const toets={l:false,r:false};
+let f=0;
+const sy=wy=>PY-(wy-g.cam);
+
+function maakStraat(){
+  const L=g.level,n=Math.min(22,14+L*2);
+  g.huizen=[];
+  for(let i=0;i<n;i++)g.huizen.push({wy:130+i*SLOT,klant:Math.random()<.55,klaar:false,boos:0,dak:DAK[(Math.random()*DAK.length)|0],flits:0});
+  if(!g.huizen.some(h=>h.klant))g.huizen[0].klant=true;
+  g.eind=130+n*SLOT+70;
+  g.ents=[];
+  let wy=230,teller=0;
+  while(wy<g.eind-60){
+    teller++;
+    const p=Math.random();let type;
+    if(teller%4===0)type="pak";
+    else if(p<.2)type="auto";else if(p<.38)type="kliko";else if(p<.56)type="put";else if(p<.7)type="hond";else if(p<.85)type="scooter";else type="bol";
+    const e={type,wy,dir:Math.random()<.5?-1:1};
+    if(type==="auto"){e.x=140;e.w=14;e.h=28;e.k=KLEUR[(Math.random()*5)|0];}
+    if(type==="kliko"){e.x=Math.random()<.5?75:rnd(88,100);e.w=8;e.h=9;e.k=Math.random()<.5?"#2f8a4a":"#5d6770";}
+    if(type==="put"){e.x=rnd(90,140);e.w=10;e.h=7;}
+    if(type==="hond"){e.x=rnd(72,116);e.w=9;e.h=6;}
+    if(type==="scooter"){e.x=rnd(118,134);e.w=7;e.h=14;e.wy+=140;}
+    if(type==="pak"){e.x=rnd(88,140);e.w=8;e.h=8;}
+    if(type==="bol"){e.x=rnd(86,142);e.w=7;e.h=7;}
+    g.ents.push(e);
+    wy+=rnd(62,112)/(1+L*.12);
+  }
+  g.cam=0;g.px=104;g.speed=0;g.base=52+L*6;g.reeks=0;g.straatKlacht=0;g.schoten=[];g.pijlen=[];g.zweef=[];g.inv=0;
+}
+function nieuw(){g.score=0;g.ammo=12;g.lives=3;g.klacht=0;g.level=0;maakStraat();g.mode="spel";verberg();}
+function volgende(){g.level++;g.ammo+=5;maakStraat();g.mode="spel";verberg();}
+
+function toon_(titel,html,knop,fn){$("o-titel").textContent=titel;$("o-tekst").innerHTML=html;$("o-knop").textContent=knop;$("o-knop").onclick=fn;$("over").hidden=false;$("o-knop").focus({preventScroll:true});}
+function verberg(){$("over").hidden=true;}
+function afgelopen(titel,reden){
+  g.mode="klaar";
+  if(g.score>best){best=g.score;try{localStorage.setItem("fatbike-boy-best",best);}catch(e){}}
+  toon_(titel,"<p>"+reden+"</p><p>Score: <b>"+g.score+"</b><br>Beste score: <b>"+best+"</b><br>Straten gehaald: <b>"+g.level+"</b></p>","Opnieuw",nieuw);
+}
+
+function knal(x,y,n){
+  for(let i=0;i<(n||26);i++){const a=Math.random()*6.283,v=rnd(18,62),k=KLEUR[(Math.random()*5)|0];
+    g.vonken.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:rnd(.5,1),m:1,k});}
+  toon("knal");
+}
+function zweef(x,wy,s,k){g.zweef.push({x,wy,s,k,l:1});}
+
+function gooi(){
+  if(g.mode!=="spel"||g.cool>0)return;
+  if(g.ammo<=0){g.leeg=.5;toon("fout");return;}
+  g.ammo--;g.cool=.32;g.gooi=.2;
+  g.schoten.push({x0:g.px-4,wy0:g.cam+2,tx:g.px-42,twy:g.cam+16,t:0});
+}
+function land(s){
+  const x=s.tx,h=g.huizen.find(h=>s.twy>=h.wy&&s.twy<h.wy+SLOT);
+  const Y=sy(s.twy);
+  if(x>68||!h){for(let i=0;i<5;i++)g.vonken.push({x,y:Y,vx:rnd(-12,12),vy:rnd(-20,-4),l:.35,m:.35,k:"#a4adc2"});toon("pfff");g.reeks=0;return;}
+  if(h.klant){
+    const d=Math.hypot(x-52,s.twy-(h.wy+TEGEL));
+    if(!h.klaar&&d<10){
+      h.klaar=true;h.flits=.5;g.reeks++;
+      const p=100+(g.reeks-1)*20;g.score+=p;zweef(52,h.wy+TEGEL+8,"+"+p,"#ffd866");
+      g.pijlen.push({x:52,y:sy(h.wy+TEGEL),l:.24});
+    }else{for(let i=0;i<6;i++)g.vonken.push({x,y:Y,vx:rnd(-14,14),vy:rnd(-22,-4),l:.4,m:.4,k:"#ffd866"});toon("pfff");g.reeks=0;}
+  }else{
+    g.klacht++;g.straatKlacht++;g.reeks=0;h.boos=2.5;g.score=Math.max(0,g.score-50);zweef(x,s.twy+6,"-50","#ff5d73");
+    knal(x,Y,10);toon("fout");g.schud=.25;
+    if(g.klacht>=3)afgelopen("Tas ingenomen","Drie klachten uit vuurwerkvrije tuinen. De wijkagent stond je bij de volgende hoek al op te wachten.");
+  }
+}
+
+function update(dt){
+  g.t+=dt;if(!RM)f=Math.floor(g.t*10);
+  if(g.mode==="spel"){
+    const dir=(toets.r?1:0)-(toets.l?1:0);g.lean=dir;
+    g.px=clamp(g.px+dir*74*dt,71,147);
+    g.speed+=(g.base-g.speed)*dt*1.6;g.cam+=g.speed*dt;
+    g.cool-=dt;g.inv-=dt;g.gooi-=dt;if(g.leeg>0)g.leeg-=dt;
+    for(const e of g.ents){
+      if(e.type==="scooter")e.wy-=46*dt;
+      if(e.type==="hond"){e.x+=e.dir*24*dt;if(e.x<71){e.x=71;e.dir=1;}if(e.x>118){e.x=118;e.dir=-1;}}
+      if(e.weg)continue;
+      const raak=Math.abs(e.x-g.px)<(e.w/2+3.5)&&e.wy<g.cam+9&&e.wy+e.h>g.cam-9;
+      if(!raak)continue;
+      if(e.type==="pak"){e.weg=true;g.ammo+=5;zweef(e.x,e.wy+8,"+5","#ffd866");toon("pak");}
+      else if(e.type==="bol"){e.weg=true;g.score+=50;zweef(e.x,e.wy+8,"+50","#7dffb0");toon("bol");}
+      else if(g.inv<=0){
+        g.lives--;g.inv=1.6;g.speed=6;g.schud=.35;g.reeks=0;toon("bots");
+        if(g.lives<=0){afgelopen("Accu leeg","Dat was de derde botsing. Je fatbike staat tegen een lantaarnpaal en jij loopt de rest naar huis.");break;}
+      }
+    }
+    g.ents=g.ents.filter(e=>!e.weg&&e.wy>g.cam-80);
+    if(g.mode==="spel"&&g.cam>g.eind){g.mode="finale";g.ft=0;}
+  }else if(g.mode==="finale"){
+    g.ft+=dt;g.speed*=Math.pow(.2,dt);g.cam+=g.speed*dt;g.lean=0;
+    if(Math.random()<dt*7)knal(rnd(20,140),rnd(20,120),22);
+    if(g.ft>2.8){
+      const kl=g.huizen.filter(h=>h.klant),ok=kl.filter(h=>h.klaar).length,perfect=ok===kl.length&&g.straatKlacht===0;
+      const bonus=ok*25+(perfect?500:0);g.score+=bonus;g.mode="pauze";
+      toon_("Gelukkig nieuwjaar!","<p>Straat "+(g.level+1)+" zit erop.</p><p>Bezorgd: <b>"+ok+" van "+kl.length+"</b><br>Bonus: <b>+"+bonus+"</b>"+(perfect?" (foutloze straat)":"")+"<br>Score: <b>"+g.score+"</b></p><p>De volgende straat is drukker en je rijdt harder. Je krijgt 5 pijlen mee.</p>","Volgende straat",volgende);
+    }
+  }
+  for(const s of g.schoten){s.t+=dt/.42;if(s.t>=1){s.af=true;land(s);}}
+  g.schoten=g.schoten.filter(s=>!s.af);
+  for(const p of g.pijlen){p.y-=150*dt;p.l-=dt;if(p.l<=0)knal(p.x,p.y,30);}
+  g.pijlen=g.pijlen.filter(p=>p.l>0);
+  const drift=(g.mode==="spel"?g.speed*.35:0);
+  for(const v of g.vonken){v.x+=v.vx*dt;v.y+=(v.vy+drift)*dt;v.vy+=34*dt;v.vx*=Math.pow(.25,dt);v.l-=dt;}
+  g.vonken=g.vonken.filter(v=>v.l>0);
+  for(const z of g.zweef){z.wy+=16*dt;z.l-=dt;}
+  g.zweef=g.zweef.filter(z=>z.l>0);
+  for(const h of g.huizen){if(h.boos>0)h.boos-=dt;if(h.flits>0)h.flits-=dt;}
+  if(g.schud>0)g.schud-=dt;
+}
+
+/* tekenen */
+function huis(h){
+  const y=Math.round(sy(h.wy+SLOT));if(y>H||y<-SLOT)return;
+  const licht=h.klant||h.boos>0;
+  r(0,y,68,SLOT,h.klant?"#27523f":"#1e3d33");
+  if(h.flits>0)r(36,y,32,SLOT,"rgba(255,230,150,.35)");
+  r(36,y+25,32,4,"#4b5162");
+  r(0,y,68,2,"#12281f");r(66,y,2,SLOT,"#12281f");r(66,y+25,2,4,"#4b5162");
+  r(0,y+4,34,48,h.dak);r(16,y+4,2,48,"rgba(255,255,255,.14)");r(0,y+4,34,1,"rgba(0,0,0,.3)");r(0,y+51,34,1,"rgba(0,0,0,.3)");
+  r(6,y+10,5,5,"#2a2f3d");r(7,y+11,3,3,"#11141c");
+  r(34,y+4,2,48,"#11141c");r(34,y+11,2,9,licht?"#ffd866":"#1d2433");r(34,y+35,2,9,licht?"#ffd866":"#1d2433");r(34,y+24,2,6,"#8a5a3b");
+  if(licht){r(36,y+11,3,9,"rgba(255,216,102,.18)");r(36,y+35,3,9,"rgba(255,216,102,.18)");}
+  if(h.klant){
+    for(let k=0;k<8;k++)r(37,y+6+k*6,1,1,KLEUR[(k+(f>>2))%5]);
+    const ty=y+SLOT-TEGEL;
+    if(!h.klaar&&f%10<6)r(46,ty-6,12,12,"rgba(255,216,102,.35)");
+    r(47,ty-5,10,10,"#11141c");r(48,ty-4,8,8,h.klaar?"#3a3f4d":"#ffd866");
+    if(!h.klaar){r(48,ty-4,2,2,"#11141c");r(52,ty-4,2,2,"#11141c");r(50,ty-2,2,2,"#11141c");r(54,ty-2,2,2,"#11141c");r(48,ty,2,2,"#11141c");r(52,ty,2,2,"#11141c");r(50,ty+2,2,2,"#11141c");r(54,ty+2,2,2,"#11141c");}
+    else{r(50,ty-2,4,4,"#1b8556");}
+  }else{
+    r(60,y+46,1,6,"#8d93a3");r(57,y+38,7,7,"#e2231a");r(58,y+39,5,5,"#f4f1e8");r(58,y+43,1,1,"#e2231a");r(59,y+42,1,1,"#e2231a");r(60,y+41,1,1,"#e2231a");r(61,y+40,1,1,"#e2231a");r(62,y+39,1,1,"#e2231a");
+    r(44,y+12,5,3,"#2f6b3f");r(52,y+16,4,3,"#2f6b3f");
+    if(h.boos>0&&f%4<3){r(40,y+20,3,7,"#ff5d73");r(40,y+29,3,3,"#ff5d73");}
+  }
+}
+function ding(e){
+  const x=Math.round(e.x),y=Math.round(sy(e.wy));if(y<-10||y>H+40)return;
+  if(e.type==="auto"){r(x-8,y-29,16,30,"rgba(0,0,0,.3)");r(x-7,y-28,14,28,e.k);r(x-6,y-23,12,6,"#1d2a36");r(x-6,y-10,12,5,"#1d2a36");r(x-7,y-28,14,1,"rgba(255,255,255,.3)");r(x-6,y-1,3,1,"#ff5d73");r(x+3,y-1,3,1,"#ff5d73");}
+  if(e.type==="kliko"){r(x-4,y-9,8,9,e.k);r(x-5,y-10,10,3,"rgba(0,0,0,.35)");r(x-4,y-10,8,2,e.k);r(x-3,y,2,1,"#0c0e14");r(x+1,y,2,1,"#0c0e14");}
+  if(e.type==="put"){r(x-5,y-7,10,7,"#11141c");r(x-4,y-6,8,5,"#05070b");r(x-5,y-7,10,1,"#4b5162");}
+  if(e.type==="hond"){const d=e.dir;r(x-4,y-5,8,4,"#c9955c");r(x+(d>0?3:-6),y-7,3,4,"#c9955c");r(x+(d>0?-5:4),y-6,1,2,"#c9955c");r(x-3,y-1,1,1+(f%2),"#8a5a3b");r(x+2,y-1,1,2-(f%2),"#8a5a3b");r(x+(d>0?5:-6),y-6,1,1,"#11141c");}
+  if(e.type==="scooter"){r(x-4,y+1,8,16,"rgba(255,240,180,.14)");r(x-2,y-14,4,4,"#0c0e14");r(x-2,y-3,4,3,"#0c0e14");r(x-3,y-11,6,9,"#6ee7ff");r(x-2,y-9,4,5,"#15171f");r(x-2,y-12,4,3,"#e8e8ee");r(x-1,y,2,1,"#fff3b0");}
+  if(e.type==="pak"){r(x-4,y-8,8,8,"#e2231a");r(x-4,y-8,8,1,"#ff8a8a");r(x-1,y-8,2,8,"#ffd866");r(x-4,y-5,8,2,"#ffd866");if(f%8<4)r(x-5,y-9,10,10,"rgba(255,216,102,.18)");}
+  if(e.type==="bol"){r(x-3,y-6,6,5,"#c98d2a");r(x-2,y-7,4,7,"#c98d2a");r(x-2,y-6,2,1,"#fff");r(x+1,y-4,1,1,"#fff");r(x-1,y-3,1,1,"#fff");}
+}
+function fiets(){
+  if(g.inv>0&&f%2===0&&g.mode==="spel")return;
+  const x=Math.round(g.px),l=g.lean;
+  r(x-3+l,PY-24,7,14,"rgba(255,240,180,.10)");r(x-2+l,PY-20,5,10,"rgba(255,240,180,.10)");
+  r(x-3,PY+2,6,9,"rgba(0,0,0,.3)");
+  r(x-2,PY+3,5,8,"#0c0e14");r(x-1,PY+4+(f%2),1,2,"#4b5162");r(x+1,PY+7-(f%2),1,2,"#4b5162");
+  r(x-2+l,PY-11,5,6,"#0c0e14");r(x+l,PY-10+(f%2),1,2,"#4b5162");
+  r(x-1,PY-6,3,10,"#e2573f");
+  r(x-5+l,PY-7,11,1,"#c9ccd6");r(x-5+l,PY-7,1,2,"#15171f");r(x+5+l,PY-7,1,2,"#15171f");
+  r(x-3,PY-4,7,7,"#15171f");r(x-3,PY-2,7,1,"#2a2e3b");r(x-3,PY+1,7,1,"#2a2e3b");
+  r(x-2,PY-9,5,5,"#e8e8ee");r(x-2,PY-9,5,1,"#ffffff");r(x-1,PY-5,3,1,"#f2c9a0");
+  if(g.gooi>0){r(x-7,PY-5,4,2,"#15171f");r(x-8,PY-6,2,2,"#f2c9a0");}
+  r(x-1,PY+10,3,1,"#ff5d73");
+}
+function teken(){
+  c.imageSmoothingEnabled=false;
+  c.save();
+  if(g.schud>0&&!RM)c.translate(Math.round(rnd(-1.5,1.5)),Math.round(rnd(-1.5,1.5)));
+  r(-2,-2,W+4,H+4,"#1e3d33");
+  r(68,0,14,H,"#5a6072");r(81,0,1,H,"#767c8f");
+  r(82,0,68,H,"#2a2f3d");r(150,0,2,H,"#767c8f");r(152,0,8,H,"#1d3a33");
+  const o=((g.cam%8)+8)%8;for(let y=-8;y<H+8;y+=8)r(68,y+o,13,1,"#4b5162");
+  const o2=((g.cam%24)+24)%24;for(let y=-24;y<H+24;y+=24)r(115,y+o2,2,10,"#8d93a3");
+  const k0=Math.floor((g.cam-80)/112);
+  for(let k=k0;k<k0+4;k++){const y=Math.round(sy(k*112+40));r(124,y-14,30,26,"rgba(255,216,102,.07)");r(132,y-9,20,16,"rgba(255,216,102,.07)");r(154,y-6,1,8,"#8d93a3");r(151,y-7,4,2,"#ffd866");
+    const yb=Math.round(sy(k*112+96));r(153,yb-8,6,8,"#18382b");r(154,yb-10,4,3,"#234a3a");}
+  for(const h of g.huizen)huis(h);
+  const ye=Math.round(sy(g.eind));if(ye>-10&&ye<H+10){for(let x=68;x<152;x+=4)for(let j=0;j<2;j++)r(x,ye-4+j*4,4,4,((x>>2)+j)%2?"#f4f1e8":"#11141c");}
+  const lijst=g.ents.slice().sort((a,b)=>b.wy-a.wy);
+  for(const e of lijst)if(e.wy>g.cam)ding(e);
+  fiets();
+  for(const e of lijst)if(e.wy<=g.cam)ding(e);
+  for(const s of g.schoten){const x=s.x0+(s.tx-s.x0)*s.t,y=sy(s.wy0+(s.twy-s.wy0)*s.t),hgt=Math.sin(s.t*Math.PI)*14;
+    r(x-1,y,3,1,"rgba(0,0,0,.4)");r(x-1,y-hgt-1,3,2,"#e2231a");r(x+1,y-hgt-2,1,1,f%2?"#ffd866":"#fff");}
+  for(const p of g.pijlen){r(p.x,p.y,1,7,"#ffd866");r(p.x,p.y-1,1,2,"#fff");}
+  for(const v of g.vonken){const a=v.l/v.m;r(v.x,v.y,a>.5?2:1,a>.5?2:1,a<.25&&f%2?"#fff":v.k);}
+  for(const z of g.zweef)tekst(z.s,z.x,Math.round(sy(z.wy)),z.k);
+  if(g.mode==="finale"&&f%4<2)r(0,0,W,H,"rgba(255,255,255,.04)");
+  c.restore();
+}
+let hudOud="";
+function hud(){
+  const s=g.score+"|"+g.ammo+"|"+g.lives+"|"+g.klacht+"|"+(g.leeg>0);
+  if(s===hudOud)return;hudOud=s;
+  $("h-score").textContent=g.score;$("h-ammo").textContent=g.ammo;$("h-ammo").classList.toggle("alarm",g.ammo===0||g.leeg>0);
+  $("h-accu").textContent="▮".repeat(Math.max(0,g.lives))+"▯".repeat(3-Math.max(0,g.lives));$("h-accu").classList.toggle("alarm",g.lives===1);
+  $("h-klacht").textContent=g.klacht+"/3";$("h-klacht").classList.toggle("alarm",g.klacht>=2);
+}
+let vorig=0;
+function lus(t){
+  const dt=Math.min(.05,(t-vorig)/1000||0);vorig=t;
+  if(g.mode==="titel"){g.t+=dt;if(!RM){f=Math.floor(g.t*10);g.cam+=14*dt;if(g.cam>g.eind-200)g.cam=0;}}
+  else update(dt);
+  teken();hud();requestAnimationFrame(lus);
+}
+
+/* besturing */
+function houd(id,naam){
+  const b=$(id);
+  const aan=e=>{e.preventDefault();toets[naam]=true;b.classList.add("aan");try{b.setPointerCapture(e.pointerId);}catch(_){}};
+  const uit=()=>{toets[naam]=false;b.classList.remove("aan");};
+  b.addEventListener("pointerdown",aan);b.addEventListener("pointerup",uit);b.addEventListener("pointercancel",uit);b.addEventListener("lostpointercapture",uit);
+  b.addEventListener("contextmenu",e=>e.preventDefault());
+}
+houd("links","l");houd("rechts","r");
+$("gooi").addEventListener("pointerdown",e=>{e.preventDefault();$("gooi").classList.add("aan");gooi();});
+["pointerup","pointercancel","pointerleave"].forEach(n=>$("gooi").addEventListener(n,()=>$("gooi").classList.remove("aan")));
+cv.addEventListener("pointerdown",e=>{e.preventDefault();gooi();});
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A"){toets.l=true;e.preventDefault();}
+  if(e.key==="ArrowRight"||e.key==="d"||e.key==="D"){toets.r=true;e.preventDefault();}
+  if(e.key===" "&&g.mode==="spel"){e.preventDefault();if(!e.repeat)gooi();}
+});
+document.addEventListener("keyup",e=>{
+  if(e.key==="ArrowLeft"||e.key==="a"||e.key==="A")toets.l=false;
+  if(e.key==="ArrowRight"||e.key==="d"||e.key==="D")toets.r=false;
+});
+window.addEventListener("blur",()=>{toets.l=toets.r=false;});
+
+function start(){maakStraat();g.mode="titel";$("o-knop").onclick=nieuw;requestAnimationFrame(lus);}
+window.claude?.hot?.snapshot?.(()=>({best}));
+if(window.claude?.hot?.ready)window.claude.hot.ready(start);else start();
+</script>
+</body>
+</html>
